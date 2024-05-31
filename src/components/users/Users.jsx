@@ -2,13 +2,18 @@ import React, { Fragment, useState } from "react";
 import "./Users.css";
 import male from "../../assets/male-avatar-boy-face-man-user-9.svg";
 import female from "../../assets/female-avatar-girl-face-woman-user-2.svg";
-import { useDispatch } from "react-redux";
-import { removeFromUsers } from "../../store/slices/usersSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  removeFromUsers,
+  followUser,
+  unfollowUser,
+} from "../../store/slices/usersSlice";
 import EditUser from "../../router/edit-users/EditUser";
 
 function Users({ data }) {
   const [editUser, setEditUser] = useState(null);
   const dispatch = useDispatch();
+  const followedUsers = useSelector((state) => state.users.followed);
 
   const handleEditClick = (user) => {
     setEditUser(user);
@@ -16,6 +21,14 @@ function Users({ data }) {
 
   const handleCloseEdit = () => {
     setEditUser(null);
+  };
+
+  const handleFollowClick = (user) => {
+    if (followedUsers.find((u) => u.id === user.id)) {
+      dispatch(unfollowUser(user));
+    } else {
+      dispatch(followUser(user));
+    }
   };
 
   const users = data?.map((user) => (
@@ -34,16 +47,23 @@ function Users({ data }) {
         >
           Edit
         </button>
-        <button style={{ background: "blue" }}>Follow</button>
+        <button
+          style={{
+            background: followedUsers.find((u) => u.id === user.id)
+              ? "red"
+              : "blue",
+          }}
+          onClick={() => handleFollowClick(user)}
+        >
+          {followedUsers.find((u) => u.id === user.id) ? "Unfollow" : "Follow"}
+        </button>
       </div>
     </div>
   ));
 
   return (
     <Fragment>
-      {editUser && (
-        <div onClick={handleCloseEdit} className="overlay"></div>
-      )}
+      {editUser && <div onClick={handleCloseEdit} className="overlay"></div>}
       <div className="users__wrapper">{users}</div>
       {editUser && (
         <EditUser user={editUser} setShowEditModule={handleCloseEdit} />

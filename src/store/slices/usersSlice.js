@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   value: JSON.parse(localStorage.getItem("users")) || [],
+  followed: JSON.parse(localStorage.getItem("followedUsers")) || [],
 };
 
 export const usersSlice = createSlice({
@@ -27,14 +28,27 @@ export const usersSlice = createSlice({
         localStorage.setItem("users", JSON.stringify(state.value));
       }
     },
-    followUsers: (state, action) => {
-      state.value = [...state.value, action.payload];
-      localStorage.setItem("users", JSON.stringify(state.value));
+    followUser: (state, action) => {
+      const user = action.payload;
+      if (!state.followed.find((u) => u.id === user.id)) {
+        state.followed = [...state.followed, user];
+        localStorage.setItem("followedUsers", JSON.stringify(state.followed));
+      }
+    },
+    unfollowUser: (state, action) => {
+      const user = action.payload;
+      state.followed = state.followed.filter((u) => u.id !== user.id);
+      localStorage.setItem("followedUsers", JSON.stringify(state.followed));
     },
   },
 });
 
-export const { follow, addToUsers, editUser, removeFromUsers } =
-  usersSlice.actions;
+export const {
+  addToUsers,
+  editUser,
+  removeFromUsers,
+  followUser,
+  unfollowUser,
+} = usersSlice.actions;
 
 export default usersSlice.reducer;

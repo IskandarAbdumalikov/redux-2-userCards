@@ -5,6 +5,10 @@ import { useSelector } from "react-redux";
 
 function Navbar() {
   const usersCount = useSelector((state) => state.users.value).length;
+  const followedUsersCount = useSelector(
+    (state) => state.users.followed
+  ).length;
+
   return (
     <div className="navbar">
       <h2>Redux Toolkit</h2>
@@ -13,7 +17,9 @@ function Navbar() {
       <NavLink to={"/all-users"}>
         All users <sup>{usersCount}</sup>
       </NavLink>
-      <NavLink to={"/followers"}>Followers</NavLink>
+      <NavLink to={"/followers"}>
+        Followers <sup>{followedUsersCount}</sup>
+      </NavLink>
     </div>
   );
 }
